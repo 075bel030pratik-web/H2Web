@@ -11,6 +11,10 @@ client = MongoClient(MONGO_URI)
 db = client["esp32_data"]
 collection = db["adc_readings"]
 
+@app.route("/")
+def home():
+    return "Server running"
+
 @app.post("/reading")
 def reading():
     data = request.get_json(force=True)
