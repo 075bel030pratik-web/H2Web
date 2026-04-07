@@ -20,24 +20,16 @@ def home():
 def reading():
     data = request.get_json(force=True)
 
-    device = data.get("device", "unknown")
-    batch_time = data.get("batch_time")
-    samples = data.get("samples", [])
+    doc = {
+        "device": data.get("device"),
+        "time": data.get("time"),
+        "adc_raw": int(data.get("adc_raw", 0)),
+        "created_at": datetime.utcnow()
+    }
 
-    docs = []
-    for s in samples:
-        docs.append({
-            "device": device,
-            "batch_time": batch_time,
-            "time": s.get("time"),
-            "adc_raw": int(s.get("adc_raw", 0)),
-            "created_at": datetime.utcnow()
-        })
+    collection.insert_one(doc)
 
-    if docs:
-        collection.insert_many(docs)
-
-    return jsonify({"ok": True, "inserted": len(docs)})
+    return jsonify({"ok": True})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3000, debug=True)
